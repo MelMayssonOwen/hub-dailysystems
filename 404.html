@@ -98,3 +98,23 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:2em 0}
 <div class="hero"><p class="eyebrow">Error 404</p><h1>That page isn't in the lab.</h1><p class="lede">The page you were looking for moved or never existed. Try one of these:</p><div class="related"><span class="lbl">Popular</span><a href="/best/budgeting-apps-2026/">Best budgeting apps 2026</a><a href="/best/habit-tracker-apps-2026/">Best habit tracker apps 2026</a><a href="/how-to/">All guides</a><a href="/">Home</a></div></div>
 </div></main>
 <footer class="site"><div class="wrap"><div class="fnav"><a href="/">Home</a><a href="/how-to/">Guides</a><a href="/glossary/">Glossary</a><a href="/faq/">FAQ</a><a href="/about/">About</a></div><p>Daily Systems Lab publishes evidence-led field notes on personal budgeting, spend control, and habit formation. Every statistic links to its named primary source; nothing here is financial advice, and you are responsible for your own decisions.</p><p class="disclose">Disclosure: this site features commercial partners and promoted placements, which can influence which products appear and how they are ranked. Comparisons reflect our own research and opinion. Verify current pricing and features on each provider’s site before buying.</p><p>&copy; 2026 Daily Systems Lab. Last reviewed 2026-08-05.</p></div></footer>
+<script>
+(function () {
+  var path = window.location.pathname.replace(/\/+$/, "") + "/";
+  var hash = 2166136261;
+  for (var i = 0; i < path.length; i++) {
+    hash ^= path.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+  var destinations = {
+    "3543577062": "/best/budgeting-apps-2026/",
+    "3642478340": "/best/free-budget-spreadsheet-templates-2026/",
+    "2419114595": "/best/habit-tracker-apps-2026/"
+  };
+  var destination = destinations[String(hash >>> 0)];
+  if (!destination) return;
+  var notice = document.querySelector(".hero .lede");
+  if (notice) notice.textContent = "This guide moved. Redirecting to the closest topic guide…";
+  window.location.replace(destination);
+})();
+</script>
