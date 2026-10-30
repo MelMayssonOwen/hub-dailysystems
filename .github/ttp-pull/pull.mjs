@@ -72,7 +72,11 @@ function render(tpl, post) {
   h = h.replace(/(<meta\s+name="twitter:title"\s+content=")[^"]*(")/i, `$1${esc(title)}$2`);
   h = h.replace(/(<meta\s+name="twitter:description"\s+content=")[^"]*(")/i, `$1${esc(desc)}$2`);
   if (!/rel="canonical"/i.test(h)) h = h.replace(/<\/head>/i, `<link rel="canonical" href="${url}">\n</head>`);
-  h = h.replace(/<\/head>/i, `${jsonLd(crumb)}\n${jsonLd(ld)}\n</head>`);
+  // Some templates omit <head>/</head> (implicit HTML). Fall back to the first <header>/<main>/<body> so JSON-LD is never dropped.
+  const ldTags = `${jsonLd(crumb)}\n${jsonLd(ld)}\n`;
+  if (/<\/head>/i.test(h)) h = h.replace(/<\/head>/i, `${ldTags}</head>`);
+  else if (/<(header|main|body)[\s>]/i.test(h)) h = h.replace(/<(header|main|body)[\s>]/i, m => `${ldTags}${m}`);
+  else h = ldTags + h;
   h = h.replace(/<main[\s>][\s\S]*<\/main>/i, () => main);
   if (h.includes(TOKEN)) throw new Error('token leaked into rendered page');
   return h;
@@ -98,7 +102,12 @@ for (let offset = 0; ; offset += 50) {
     const slug = String(s.slug || '').toLowerCase();
     if (!/^[a-z0-9][a-z0-9-]{0,150}$/.test(slug)) continue;
     const dir = path.join(ROOT, slug);
-    if (fs.existsSync(dir)) continue;
+    if (fs.existsSync(dir)) {
+      // Backfill: re-render our own generated pages that are missing structured data.
+      const f = path.join(dir, 'index.html');
+      const cur = fs.existsSync(f) ? fs.readFileSync(f, 'utf8') : '';
+      if (!(/<p class="updated">Published /.test(cur) && !/application\/ld\+json/i.test(cur))) continue;
+    }
     const { post } = await get(`${API}/api/autoseo/public/${TOKEN}/posts/${encodeURIComponent(slug)}`);
     if (!post?.bodyHtml) continue;
     fs.mkdirSync(dir, { recursive: true });
