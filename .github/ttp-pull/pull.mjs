@@ -14,7 +14,9 @@ const SITE = `https://${domain}`;
 const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 // The token must never reach the public site: rewrite TTP hosted URLs to ours.
 const hostedPrefix = new RegExp(`https?://(?:www\\.)?timetopost\\.co/hosted/${TOKEN.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}/?`, 'g');
-const scrub = s => String(s ?? '').replace(hostedPrefix, `${SITE}/`).split(TOKEN).join('');
+const scrub = s => String(s ?? '').replace(hostedPrefix, `${SITE}/`).split(TOKEN).join('')
+  // Never link the product domain from network articles: unwrap any remaining timetopost.co anchors.
+  .replace(/<a\b[^>]*href="https?:\/\/(?:www\.)?timetopost\.co[^"]*"[^>]*>([\s\S]*?)<\/a>/gi, '$1');
 
 function pickTemplate() {
   if (process.env.TEMPLATE) return fs.readFileSync(path.join(ROOT, process.env.TEMPLATE), 'utf8');
